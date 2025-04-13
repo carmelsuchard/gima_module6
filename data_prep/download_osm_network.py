@@ -1,17 +1,26 @@
+import geopandas as gpd
+import osmnx as ox
 
-G = ox.graph_from_polygon(utrecht, network_type='drive')
-ox.plot_graph(G)
-    
-#  data = gpd.GeoDataFrame.from_features(geojson.loads(r.content), crs="EPSG:3067")   
-# EPSG:28992
+# Read Utrecht boundary
+boundary = gpd.read_file("data_prep/data_layers/utrecht.shp")
+projected = boundary.to_crs(4326)
+utrech_polygon = projected["geometry"].iloc[0]
 
-# municipality = ox.geocode_to_gdf('Berkeley, California')
-# ax = ox.project_gdf(municipality).plot()
-# _ = ax.axis('off')
+# Download bike paths from OSM and save
+G = ox.graph_from_polygon(utrech_polygon, network_type='bike')
+try:
+    ox.io.save_graph_xml(G, filepath="data_prep/data_layers/utrecht_cyclepaths.osm")
+except ox._errors.GraphSimplificationError as e:
+    print (f"Can't save as .osm, error: {e}")
+finally:
+    gdf_nodes, gdf_edges = ox.convert.graph_to_gdfs(G)
+    gdf_nodes = gdf_nodes.to_crs("EPSG:28992")
+    gdf_edges = gdf_edges.to_crs("EPSG:28992")
+    gdf_nodes.to_file("data_prep/data_layers/utrecht_cyclepaths_nodes.shp")
+    gdf_edges.to_file("data_prep/data_layers/utrecht_cyclepaths_edges.shp")
 
-	
-# G = ox.graph_from_polygon(mission_shape, network_type='all')
-# ox.plot_graph(G)
+    print(gdf_edges.crs)
 
-# G = ox.graph_from_polygon(mission_shape, network_type='bike')
-# ox.plot_graph(G)
+# Tutorials
+# https://github.com/gboeing/osmnx-examples/blob/main/notebooks/03-graph-place-queries.ipynb
+# https://geoffboeing.com/2016/11/osmnx-python-street-networks/
