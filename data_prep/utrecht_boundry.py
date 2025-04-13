@@ -5,9 +5,6 @@ import json
 import os
 import pyproj
 import sys
-print(pyproj.datadir.get_data_dir())
-
-#sys.exit()
 
 utrecht_shapefile = "data_prep/data_layers/utrecht.shp"
 if not os.path.exists(utrecht_shapefile):
