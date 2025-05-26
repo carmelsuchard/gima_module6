@@ -1,0 +1,44 @@
+h1 {
+    color: pink;
+    font-size:100px;
+}
+body {
+    background-color: rgb(168, 22, 212);
+    font-family: Arial, sans-serif;
+    text-align: center;
+}
+
+/*this is important to give the map a height*/
+#container {
+    display: flex;
+    height: 100vh; /* Full viewport height */
+}
+
+#map {
+    flex: 1;
+    height: 100%; /* Make sure it fills container vertically */
+}
+
+#sidebar {
+    width: 500px;
+    background-color: #f8f8f8;
+    padding: 15px;
+    border-left: 1px solid #ccc;
+    overflow-y: auto;
+}
+
+#navbar-brand {
+    font-size: 60px;
+    font-weight: bold;
+    color: #333;
+}
+
+/* Navbar styles */
+.navbar-brand {
+    font-size: 24px; /* Adjust as needed */
+    font-weight: bold;
+    color: #333;
+    text-decoration: none; /* Remove underline */
+    display: inline-block; /* Ensure it behaves like a block element */
+    align-items: center; /* Center vertically */
+}
