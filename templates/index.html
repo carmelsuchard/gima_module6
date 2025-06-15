@@ -28,8 +28,67 @@
         <!-- the map will go inside this div below -->
         <div id="map"></div>
         <div id="sidebar">
-            <h3>Cycling</h3>
-            <p>Options go here...</p>
+            <h3>What kind of cyclist are you?</h3>
+            <button id ="stress_avoider" class="persona-button">Stress-avoider</button>
+            <button id ="visibility_seeker" class="persona-button">Visibility-seeker</button>
+            <button id ="comfort_rider" class="persona-button">Comfort-rider</button>
+            <button id ="flow_seeker" class="persona-button">Flow-seeker</button>
+
+            <div class="slidecontainer">
+                <div class="slider-group">
+                    <label for="Greenery">Greenery</label>
+                    <progress id="Greenery" max="100" value="0"></progress>
+                    <span id="Greenery-value">0</span>                    
+                </div>
+                <div class="slider-group">
+                    <label for="Visibility">Visibility</label>                    
+                    <progress id="Visibility" max="100" value="0"></progress>
+                    <span id="Visibility-value">0</span>
+                </div>
+                <div class="slider-group">
+                    <label for="Surveillance">Surveillance</label>
+                    <progress id="Surveillance" max="100" value="0"></progress>
+                    <span id="Surveillance-value">0</span>
+                </div>
+                <div class="slider-group">
+                    <label for="Slope">Slope</label>
+                    <progress id="Slope" max="100" value="0"></progress>
+                    <span id="Slope-value">0</span>
+                </div>
+                <div class="slider-group">
+                    <label for="Surface Hazard">Surface Hazard</label>
+                    <progress id="Surface Hazard" max="100" value="0"></progress>
+                    <span id="Surface Hazard-value">0</span>
+                </div>
+                <div class="slider-group">
+                    <label for="Flow Efficiency">Flow Efficiency</label>
+                    <progress id="Flow Efficiency" max="100" value="0"></progress>
+                    <span id="Flow Efficiency-value">0</span>
+                    
+                </div>
+                <div class="slider-group">
+                    <label for="Traffic Intensity">Traffic Intensity</label>
+                    <progress id="Traffic Intensity" max="100" value="0"></progress>
+                    <span id="Traffic Intensity-value">0</span>
+                </div>
+                <div class="slider-group">
+                    <label for="Crime Risk">Crime Risk</label>
+                    <progress id="Crime Risk" max="100" value="0"></progress>
+                    <span id="Crime Risk-value">0</span>
+                </div>
+                <div class="slider-group">
+                    <label for="Intersections">Intersections</label>
+                    <progress id="Intersections" max="100" value="0"></progress>
+                    <span id="Intersections-value">0</span>
+                </div>
+                    <div class="slider-group">
+                    <label for="Incidents">Incidents</label>
+                    <progress id="Incidents" max="100" value="0"></progress>
+                    <span id="Incidents-value">0</span>
+                    </div>
+            </div>
+
+                <button id="makeRouteButton" type "button">Calculate route</button>
         </div>
     </div>
     
@@ -41,7 +100,78 @@
 
     <script src="https://code.jquery.com/jquery-3.2.0.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/proj4js/2.8.0/proj4.js"></script>
+    <script src="https://unpkg.com/leaflet-ajax/dist/leaflet.ajax.min.js"></script>
     <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+    <script src= "C:/Users/carme/OneDrive/Documents/Git_Repos/gima_module6/static/data/utrecht_geojson_projected.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prefixfree/1.0.7/prefixfree.min.js"></script>
+    <script>
+    document.querySelectorAll('progress').forEach(progress => {
+        const valueLabel = document.getElementById(progress.id + '-value');
+        if (valueLabel) {
+        valueLabel.textContent = progress.value;
 
+        // Optional: update if value changes dynamically
+        const observer = new MutationObserver(() => {
+            valueLabel.textContent = progress.value;
+        });
+
+        observer.observe(progress, { attributes: true, attributeFilter: ['value'] });
+        }
+    });
+    </script>
+    <script>
+    let selectedPersona = null;
+
+    document.querySelectorAll('.persona-button').forEach(button => {
+        button.addEventListener('click', () => {
+        // Remove 'selected' from all buttons
+        document.querySelectorAll('.persona-button').forEach(btn => {
+            btn.classList.remove('selected');
+        });
+
+        // Add 'selected' to the clicked one
+        button.classList.add('selected');
+
+        // Save the selected ID (or use button.textContent if you prefer)
+        selectedPersona = button.id;
+
+        console.log("Selected persona:", selectedPersona);
+        });
+    });
+    </script>
+    <script>
+        function getUrlForSelectedPersona(source, target) {
+            if (!selectedPersona) {
+                alert("Please select a persona before requesting a route.");
+                return null;
+            }
+
+            const base = `http://127.0.0.1:8080/geoserver/module6/wfs?service=WFS&version=1.1.0&request=GetFeature`;
+            const viewparams = `viewparams=source:${source};target:${target}`;
+            let typeName = "";
+
+            switch (selectedPersona) {
+                case "stress_avoider":
+                    typeName = "module6:shortest_path_utrecht_cloud_stress_avoider";
+                    break;
+                case "visibility_seeker":
+                    typeName = "module6:shortest_path_utrecht_cloud_visibility_seeker";
+                    break;
+                case "comfort_rider":
+                    typeName = "module6:shortest_path_utrecht_cloud_comfort_rider";
+                    break;
+                case "flow_seeker":
+                    typeName = "module6:shortest_path_utrecht_cloud_flow_seeker";
+                    break;
+                default:
+                    alert("Unknown persona selected.");
+                    return null;
+            }
+
+            const url = `${base}&typeName=${typeName}&outputFormat=application/json&${viewparams}`;
+            console.log("Generated URL:", url);
+            return url;
+        }
+    </script>
 </body>
 </html>
