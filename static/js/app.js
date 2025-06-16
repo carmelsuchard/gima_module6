@@ -201,25 +201,34 @@ function loadVertex(response, isSource) {
 function getRoute() {
 	console.log(`Route requested: source=${source}, target=${target}`);
 
-	// Get the selectedPersona variable, depending on selected persona, then etwork call will be different
+	// Get the selectedPersona variable, depending on selected persona, then network call will be different
 	const url = getUrlForSelectedPersona(source, target);
-	
-	console.log("URL:", url);	
-	// Add an else
+
+	console.log("URL:", url);
+
 	if (source !== null && target !== null) {
 		console.log("Went into the if statement");
+
 		$.getJSON(url, function(data) {
-		map.removeLayer(pathLayer);
-		pathLayer = L.geoJSON(data);
-		map.addLayer(pathLayer);
-	});
-	}
-	else {
+			map.removeLayer(pathLayer);
+
+			// Apply styling to the route
+			pathLayer = L.geoJSON(data, {
+				style: function (feature) {
+					return {
+						color: '#d968c0',
+						weight: 6,
+						opacity: 0.9
+					};
+				}
+			});
+
+			map.addLayer(pathLayer);
+		});
+	} else {
 		console.warn("Source or target vertex is not set. Please set both before requesting a route.");
 		alert("Please select both source and target points on the map before requesting a route.");
 	}
-
-	
 }
 
 document.addEventListener("DOMContentLoaded", function () {
