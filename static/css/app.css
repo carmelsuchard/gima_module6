@@ -1,10 +1,11 @@
+
 h1 {
     color: pink;
     font-size:100px;
 }
 body {
     background-color: rgb(168, 22, 212);
-    font-family: Arial, sans-serif;
+    font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     text-align: center;
 }
 
@@ -12,6 +13,10 @@ body {
 #container {
     display: flex;
     height: 100vh; /* Full viewport height */
+}
+
+.leaflet-control-zoom {
+	z-index: 1001;
 }
 
 #map {
@@ -36,29 +41,35 @@ body {
 .persona-button {
     display: block; /* optional, makes sure they take full width */
     width: 100%;    /* optional, can be adjusted */
-    height: 50px; /* Adjust height as needed */
+    height: 100px; /* Adjust height as needed */
     background-color: #e2acc5; /* Button color */
+    /* Make width equal height */
+
+}
+
+.persona-button:hover {
+  background-color: #6c2c90; /* darker purple */
+  color: #ffffff;            /* white text */
+  transform: scale(1.05);    /* slightly grow */
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3); /* subtle shadow */
+  transition: all 0.2s ease;
+}
+
+.button-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-bottom: 1em;
+
+}
+
+.full-width {
+  width: 100%;
 }
 
 .persona-button.selected {
   background-color: #905ea7; /* green background */
   color: white;
-}
-
-#navbar-brand {
-    font-size: 60px;
-    font-weight: bold;
-    color: #333;
-}
-
-/* Navbar styles */
-.navbar-brand {
-    font-size: 24px; /* Adjust as needed */
-    font-weight: bold;
-    color: #333;
-    text-decoration: none; /* Remove underline */
-    display: inline-block; /* Ensure it behaves like a block element */
-    align-items: center; /* Center vertically */
 }
 
 .slidecontainer {
@@ -104,6 +115,11 @@ progress::-webkit-progress-value {
   display: flex;
   align-items: center;
   gap: 1em;
+  margin-bottom: 6px;
+}
+
+.slider-group.hidden {
+	display: none;
 }
 
 .slider-group label {
@@ -123,4 +139,24 @@ progress::-webkit-progress-value {
 .slidecontainer input[type=range] {
     /* Make slidecontainers have more space around them */
     margin: 10px 0; /* Adjust as needed */
+}
+
+/* modify button with id regular */
+#regular {
+    background-color: #e2acc5; /* Button color */
+    color: #000; /* Text color */
+    height: 50px; /* Adjust height as needed */
+}
+
+#regular:hover {
+  background-color: #9b8ba5; /* darker purple */
+  color: #ffffff;            /* white text */
+  transform: scale(1.05);    /* slightly grow */
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3); /* subtle shadow */
+  transition: all 0.2s ease;
+}
+
+#regular.selected {
+  background-color: #905ea7; /* green background */
+  color: white;
 }
