@@ -33,6 +33,7 @@
             <button id ="visibility_seeker" class="persona-button">Visibility-seeker</button>
             <button id ="comfort_rider" class="persona-button">Comfort-rider</button>
             <button id ="flow_seeker" class="persona-button">Flow-seeker</button>
+            <button id ="regular_route" class="persona-button">Calculate the shortest route</button>
 
             <div class="slidecontainer">
                 <div class="slider-group">
@@ -162,6 +163,9 @@
                     break;
                 case "flow_seeker":
                     typeName = "module6:shortest_path_utrecht_cloud_flow_seeker";
+                    break;
+                case "regular_route":
+                    typeName = "module6:shortest_path_utrecht_cloud_regular_route";
                     break;
                 default:
                     alert("Unknown persona selected.");

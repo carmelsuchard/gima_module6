@@ -19,6 +19,8 @@ body {
     height: 100%; /* Make sure it fills container vertically */
 }
 
+/* Move sidebar to left side of screen */
+
 #sidebar {
     width: 500px;
     background-color: #f8f8f8;
@@ -28,6 +30,7 @@ body {
     flex-direction: column;
     display: flex;
     gap: 0.5rem;
+    
 }
 
 .persona-button {
