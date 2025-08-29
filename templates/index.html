@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="theme-color" content="#000000">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <title> Cycling Routing App</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    
+     integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+     crossorigin=""/>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/app.css') }}">
+
+</head>
+
+<body>
+    
+   
+    <div id="container">
+        <!-- the map will go inside this div below -->
+
+        <div id="sidebar">
+            <h2>Utrecht Safe Cycling</h2>
+
+            <h3>What kind of safe cyclist are you?</h3>
+
+            <div class="button-grid">
+                <button id="stress_avoider" class="persona-button" data-hover="Avoid stress! Choose routes that avoid stress-causing factors like traffic intensity intersections, roundabouts, and traffic incidents">Stress-avoider</button>
+                <button id="visibility_seeker" class="persona-button" data-hover="Be seen! Choose well-lit streets over faster ones to avoid hesitation or confusion">Visibility-seeker</button>
+                <button id="comfort_rider" class="persona-button" data-hover="Ride in comfort! Find peaceful roads that avoid shared car-bike zones, steep slopes, and surface hazards">Comfort-rider</button>
+                <button id="flow_seeker" class="persona-button" data-hover="Go with the flow! Maximize flow efficiency by seeking bike corridors with synchronized lights and few stop signs">Flow-seeker</button>
+            </div>
+            <button id="regular" class="persona-button full-width" data-hover="Only consider distance">Shortest route</button>
+
+            <p id="explanation-text">This route considers safety factors in addition to distance.</p>
+
+
+            <div class="slidecontainer">
+                <div class="slider-group">
+                    <label for="Greenery">Greenery</label>
+                    <progress id="Greenery" max="100" value="0"></progress>
+                </div>
+                <div class="slider-group">
+                    <label for="Visibility">Visibility</label>                    
+                    <progress id="Visibility" max="100" value="0"></progress>
+                </div>
+                <div class="slider-group">
+                    <label for="surveillance"> Camera surveillance </label>
+                    <progress id="Surveillance" max="100" value="0"></progress>
+                </div>
+                <div class="slider-group">
+                    <label for="Slope">Slope</label>
+                    <progress id="Slope" max="100" value="0"></progress>
+                </div>
+                <div class="slider-group">
+                    <label for="Surface hazards">Surface Hazard</label>
+                    <progress id="Surface Hazard" max="100" value="0"></progress>                </div>
+                <div class="slider-group">
+                    <label for="Flow efficiency">Flow Efficiency</label>
+                    <progress id="Flow Efficiency" max="100" value="0"></progress>                    
+                </div>
+                <div class="slider-group">
+                    <label for="Traffic intensity">Traffic Intensity</label>
+                    <progress id="Traffic Intensity" max="100" value="0"></progress>                </div>
+                <div class="slider-group">
+                    <label for="Crime risk">Crime Risk</label>
+                    <progress id="Crime Risk" max="100" value="0"></progress>
+                </div>
+                <div class="slider-group">
+                    <label for="Intersections">Intersections</label>
+                    <progress id="Intersections" max="100" value="0"></progress>
+                </div>
+                    <div class="slider-group">
+                    <label for="Incident rates">Incidents</label>
+                    <progress id="Incidents" max="100" value="0"></progress>
+                    </div>
+            </div>
+
+                <button id="makeRouteButton" type "button">Calculate route</button>
+        </div>
+        <div id="map"></div>
+    </div>
+    
+
+    <!-- JS goes here, outside all <div> -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+        integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+        crossorigin=""></script>
+
+    <script src="https://code.jquery.com/jquery-3.2.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/proj4js/2.8.0/proj4.js"></script>
+    <script src="https://unpkg.com/leaflet-ajax/dist/leaflet.ajax.min.js"></script>
+    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+    <script src= "C:/Users/carme/OneDrive/Documents/Git_Repos/gima_module6/static/data/utrecht_geojson_projected.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prefixfree/1.0.7/prefixfree.min.js"></script>
+    <script>
+    document.querySelectorAll('progress').forEach(progress => {
+        const valueLabel = document.getElementById(progress.id + '-value');
+        if (valueLabel) {
+        valueLabel.textContent = progress.value;
+
+        // Optional: update if value changes dynamically
+        const observer = new MutationObserver(() => {
+            valueLabel.textContent = progress.value;
+        });
+
+        observer.observe(progress, { attributes: true, attributeFilter: ['value'] });
+        }
+    });
+    </script>
+    <script>
+    let selectedPersona = null;
+
+    document.querySelectorAll('.persona-button').forEach(button => {
+        button.addEventListener('click', () => {
+        // Remove 'selected' from all buttons
+        document.querySelectorAll('.persona-button').forEach(btn => {
+            btn.classList.remove('selected');
+        });
+
+        // Add 'selected' to the clicked one
+        button.classList.add('selected');
+
+        // Save the selected ID (or use button.textContent if you prefer)
+        selectedPersona = button.id;
+
+        console.log("Selected persona:", selectedPersona);
+        });
+    });
+    </script>
+    <script>
+        function getUrlForSelectedPersona(source, target) {
+            if (!selectedPersona) {
+                alert("Please select a persona before requesting a route.");
+                return null;
+            }
+
+            const base = `http://127.0.0.1:8080/geoserver/module6/wfs?service=WFS&version=1.1.0&request=GetFeature`;
+            const viewparams = `viewparams=source:${source};target:${target}`;
+            let typeName = "";
+
+            switch (selectedPersona) {
+                case "stress_avoider":
+                    typeName = "module6:shortest_path_utrecht_cloud_stress_avoider";
+                    break;
+                case "visibility_seeker":
+                    typeName = "module6:shortest_path_utrecht_cloud_visibility_seeker";
+                    break;
+                case "comfort_rider":
+                    typeName = "module6:shortest_path_utrecht_cloud_comfort_rider";
+                    break;
+                case "flow_seeker":
+                    typeName = "module6:shortest_path_utrecht_cloud_flow_seeker";
+                    break;
+                case "regular":
+                    typeName = "module6:shortest_path_utrecht_cloud_regular";
+                    break;
+                default:
+                    alert("Unknown persona selected.");
+                    return null;
+            }
+
+            const url = `${base}&typeName=${typeName}&outputFormat=application/json&${viewparams}`;
+            console.log("Generated URL:", url);
+            return url;
+        }
+    </script>
+    <script>
+        document.querySelectorAll('.persona-button').forEach(button => {
+            const originalText = button.textContent;
+            const hoverText = button.getAttribute('data-hover');
+
+            button.addEventListener('mouseenter', () => {
+            button.textContent = hoverText;
+            });
+
+            button.addEventListener('mouseleave', () => {
+            button.textContent = originalText;
+            });
+        });
+</script>
+</body>
+</html>

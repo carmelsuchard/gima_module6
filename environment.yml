@@ -1,0 +1,7 @@
+name: mod_6_env
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - geopandas
+  - osmnx

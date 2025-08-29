@@ -1,0 +1,333 @@
+var geoserverUrl = "http://127.0.0.1:8080/geoserver/module6";
+
+// Default source and target vertex IDs
+var source = 100782;
+var target = 92512;
+
+const sliders = {
+  Greenery: document.getElementById('Greenery'),
+  Visibility: document.getElementById('Visibility'),
+  Surveillance: document.getElementById('Surveillance'),
+  Slope: document.getElementById('Slope'),
+  Surface_Hazard: document.getElementById('Surface Hazard'),
+  Flow_Efficiency: document.getElementById('Flow Efficiency'),
+  Traffic_Intensity: document.getElementById('Traffic Intensity'),
+  Crime_Risk: document.getElementById('Crime Risk'),
+  Intersections: document.getElementById('Intersections'),
+  Incidents: document.getElementById('Incidents')
+};
+
+const sliderValues = {
+  Greenery: sliders.Greenery.value,
+  Visibility: sliders.Visibility.value,
+  Surveillance: sliders.Surveillance.value,
+  Slope: sliders.Slope.value,
+  Surface_Hazard: sliders['Surface_Hazard'].value,
+  Flow_Efficiency: sliders['Flow_Efficiency'].value,
+  Traffic_Intensity: sliders['Traffic_Intensity'].value,
+  Crime_Risk: sliders['Crime_Risk'].value,
+  Intersections: sliders['Intersections'].value,
+  Incidents: sliders['Incidents'].value,
+};
+
+const personaPresets = {
+  stress_avoider: {
+	Visibility: 5,
+	Surveillance: 5,
+	Surface_Hazard: 10,
+	Traffic_Intensity: 40,
+	Crime_Risk: 10,
+	Intersections: 20,
+	Incidents: 10,
+	Greenery: 0,
+	Slope: 0,
+	Flow_Efficiency: 0
+
+  },
+  visibility_seeker: {
+    Visibility: 70,
+	Surveillance: 10,
+	Crime_Risk: 20,
+	Greenery: 0,
+	Slope: 0,
+	Surface_Hazard: 0,
+	Flow_Efficiency: 0,
+	Traffic_Intensity: 0,
+	Intersections: 0,
+	Incidents: 0
+  },
+  comfort_rider: {
+    Greenery: 5,
+	Slope: 30,
+	Surface_Hazard: 10,
+	Traffic_Intensity: 40,
+	Incidents: 15,
+	Visibility: 0,
+	Surveillance: 0,
+	Flow_Efficiency: 0,
+	Crime_Risk: 0,
+	Intersections: 0
+  },
+  flow_seeker: {
+    Slope: 20,
+	Surface_Hazard: 20,
+	Flow_Efficiency: 50,
+	Intersections: 10,
+	Visibility: 0,
+	Surveillance: 0,
+	Greenery: 0,
+	Traffic_Intensity: 0,
+	Crime_Risk: 0,
+	Incidents: 0
+  },
+  regular: {
+    Slope: 0,
+	Surface_Hazard: 0,
+	Flow_Efficiency: 0,
+	Intersections: 0,
+	Visibility: 0,
+	Surveillance: 0,
+	Greenery: 0,
+	Traffic_Intensity: 0,
+	Crime_Risk: 0,
+	Incidents: 0
+  }
+};
+
+const personaButtons = document.querySelectorAll(".persona-button");
+var utrecht_geojson_projected = {
+"type": "FeatureCollection",
+"name": "utrecht_geojson_projected",
+"crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:OGC:1.3:CRS84" } },
+"features": [
+{ "type": "Feature", "properties": { "statcode": "GM0344", "jrstatcode": "2025GM0344", "statnaam": "Utrecht", "rubriek": "gemeente", "id": 97 }, "geometry": { "type": "MultiPolygon", "coordinates": [ [ [ [ 5.032510821752011, 52.116836594926902 ], [ 5.03354503368749, 52.116758813461857 ], [ 5.040881218674538, 52.125499761917567 ], [ 5.045419445499814, 52.128462417303865 ], [ 5.044978461146636, 52.128779387237664 ], [ 5.047556017859414, 52.129972412354263 ], [ 5.061204541468019, 52.122561779014724 ], [ 5.065727185949981, 52.125255438474895 ], [ 5.066989571266428, 52.125984980099119 ], [ 5.069733455135529, 52.12641462707149 ], [ 5.070198663943751, 52.127181487494312 ], [ 5.072389585520747, 52.125359216233306 ], [ 5.076158462715481, 52.127049121445189 ], [ 5.085532825800853, 52.134366008665388 ], [ 5.085764487041218, 52.134550360682795 ], [ 5.087164523404807, 52.13567145637883 ], [ 5.100194593078097, 52.130213187747103 ], [ 5.101084362788761, 52.12984462747842 ], [ 5.102274097721017, 52.130324923067775 ], [ 5.103397423082711, 52.129848371738916 ], [ 5.105576320914654, 52.131885477663118 ], [ 5.107092849351739, 52.133211160021133 ], [ 5.126548388167994, 52.124598710407014 ], [ 5.140397128686003, 52.12099300470296 ], [ 5.140163454974809, 52.120582023965348 ], [ 5.141596209242875, 52.121174755981365 ], [ 5.14220218526866, 52.120191962244846 ], [ 5.142624211093449, 52.120844433074105 ], [ 5.146732010795835, 52.120412752473975 ], [ 5.14931011679696, 52.118491218514571 ], [ 5.148651091199678, 52.115243731717449 ], [ 5.15038081121194, 52.110875386268631 ], [ 5.157264577771262, 52.108139235417021 ], [ 5.161915010539635, 52.107215369336217 ], [ 5.156269715499324, 52.098402008707772 ], [ 5.156403118150878, 52.098148620055952 ], [ 5.157309611702559, 52.098339226644029 ], [ 5.161320950465375, 52.094384525828751 ], [ 5.166115169123693, 52.093725529328481 ], [ 5.172011683050032, 52.093785196952147 ], [ 5.175864785287534, 52.093409075126267 ], [ 5.176009364181807, 52.094083644243099 ], [ 5.17680769967957, 52.093357336074718 ], [ 5.180564113288326, 52.09313187022137 ], [ 5.180702652882156, 52.094608462017575 ], [ 5.18269192041734, 52.094307629010743 ], [ 5.184619261070219, 52.093147118706511 ], [ 5.186170035496991, 52.092927679466989 ], [ 5.189757775662346, 52.086334077288591 ], [ 5.192752057546273, 52.086076448508692 ], [ 5.195154970159923, 52.077346285556757 ], [ 5.192639261103266, 52.077914251719605 ], [ 5.181553733662008, 52.076258918436615 ], [ 5.179101562717654, 52.077915071724057 ], [ 5.171606248750502, 52.078674983017258 ], [ 5.166917254647084, 52.07668121947119 ], [ 5.162397347426285, 52.078609896017994 ], [ 5.160719052243786, 52.080562685781373 ], [ 5.160179895005119, 52.08029615932594 ], [ 5.160441415638912, 52.077788451624123 ], [ 5.155658250286847, 52.071416215867146 ], [ 5.156400429988626, 52.069057912680478 ], [ 5.159388924104171, 52.067062482610652 ], [ 5.158327140303901, 52.065249866032062 ], [ 5.158897241585605, 52.064864971734693 ], [ 5.156890660104846, 52.063426853620697 ], [ 5.157755290927057, 52.058341834247145 ], [ 5.153030625397708, 52.056757296025332 ], [ 5.152808663052376, 52.056688043678584 ], [ 5.149941578903397, 52.055589270502573 ], [ 5.145675682031289, 52.052559117483781 ], [ 5.12683195656897, 52.054918224311443 ], [ 5.124079868385051, 52.055216026881595 ], [ 5.121249207426219, 52.054385678210366 ], [ 5.11775166239736, 52.05663906217783 ], [ 5.113163083809242, 52.057704556544948 ], [ 5.113275462704897, 52.057884975577757 ], [ 5.111256913821699, 52.058317975914967 ], [ 5.110377625999584, 52.057397349060551 ], [ 5.109440734840518, 52.055508457788378 ], [ 5.108416037232311, 52.052005829792833 ], [ 5.107344362342667, 52.050025605179499 ], [ 5.105385540432398, 52.050112495093103 ], [ 5.10439766123356, 52.049937811479168 ], [ 5.102085806783972, 52.054263842915439 ], [ 5.097352129857026, 52.059480504856275 ], [ 5.096789039928971, 52.059284423367338 ], [ 5.09412415326446, 52.058754721187206 ], [ 5.089986240665838, 52.060728808716533 ], [ 5.073221372002385, 52.062222204736791 ], [ 5.069641446378445, 52.0614158152027 ], [ 5.067230274093848, 52.057500880976562 ], [ 5.065143913164446, 52.054981205522793 ], [ 5.064171505797916, 52.051577270472002 ], [ 5.063438026121666, 52.041105841722782 ], [ 5.063563249030097, 52.038347653854409 ], [ 5.062511476171581, 52.028602751510199 ], [ 5.063139855310786, 52.027880889193796 ], [ 5.062801038775351, 52.026823198868911 ], [ 5.061020769283472, 52.026281984546785 ], [ 5.054909754173109, 52.028865478184215 ], [ 5.055339662864523, 52.02973822861631 ], [ 5.051979764786818, 52.030887882970269 ], [ 5.051421287377499, 52.030105424771961 ], [ 5.045583142371464, 52.034773656833586 ], [ 5.038044188806744, 52.044171469980526 ], [ 5.028339942954933, 52.05076092084753 ], [ 5.027672201491277, 52.051695819451204 ], [ 5.028261347964918, 52.053580463165865 ], [ 5.026961052694281, 52.054632306028523 ], [ 5.027119594304567, 52.055395615005182 ], [ 5.025593140469956, 52.055856355676717 ], [ 5.021610439371751, 52.055807888304102 ], [ 5.017426827339558, 52.060991044673514 ], [ 5.01707454088967, 52.061142871974397 ], [ 5.018010505974445, 52.062218974730499 ], [ 4.999498257094241, 52.066131447147072 ], [ 5.001618037498541, 52.078144010901703 ], [ 5.003230182910371, 52.077956757073729 ], [ 5.005007078957304, 52.088452106003857 ], [ 4.994217961332027, 52.090384890184147 ], [ 4.993524272655011, 52.092225886964485 ], [ 4.989327149679308, 52.100755306905405 ], [ 4.975659727504222, 52.099789584116252 ], [ 4.973440463739853, 52.101230026171578 ], [ 4.973049621284437, 52.102783767536152 ], [ 4.975820428212228, 52.105716479782551 ], [ 4.976269446041972, 52.107971775623575 ], [ 4.978728719632604, 52.108100410255204 ], [ 4.979624916678811, 52.108722431602537 ], [ 4.979580365491236, 52.111564079132933 ], [ 4.980221541176038, 52.112199495694618 ], [ 4.978466666019185, 52.113157039492215 ], [ 4.978198011889031, 52.112846279582421 ], [ 4.970095981700406, 52.122441670860695 ], [ 4.973938346498299, 52.129673239358851 ], [ 4.985237992231186, 52.132437133182158 ], [ 4.986377675777431, 52.135243208140821 ], [ 4.994503197040704, 52.138611223212514 ], [ 5.003101807110674, 52.142050479629361 ], [ 5.002700039171988, 52.141301260346317 ], [ 5.012112283164495, 52.129691586537589 ], [ 5.032510821752011, 52.116836594926902 ] ] ] ] } }
+]
+}
+
+
+
+personaButtons.forEach(button => {
+  button.addEventListener("click", () => {
+    const preset = personaPresets[button.id];
+    for (const key in preset) {
+      if (sliders[key]) {
+        sliders[key].value = preset[key];           // Set the slider
+        sliderValues[key] = preset[key];             // Update the synced variable
+      }
+    }
+	updateVisibleProgressBars();
+  });
+});
+
+
+
+// Step 3: Function to update variable on slider input
+function updateSliderValue(id) {
+  sliderValues[id] = sliders[id].value;
+  // Call your function here or wherever you want to use the updated values
+  yourFunctionUsingSliders();
+}
+
+// Attach event listeners
+for (const id in sliders) {
+  sliders[id].addEventListener('input', () => updateSliderValue(id));
+}
+
+// Your function that uses the current slider values
+function yourFunctionUsingSliders() {
+  // Example: just console.log the current values
+  console.log('Current slider values:', sliderValues);
+}
+
+function updateVisibleProgressBars() {
+	document.querySelectorAll('.slider-group').forEach(group => {
+		const progress = group.querySelector('progress');
+		if (progress) {
+			const value = parseInt(progress.value, 10);
+			if (value === 0) {
+				group.classList.add('hidden');
+			} else {
+				group.classList.remove('hidden');
+			}
+		}
+	});
+}
+
+
+// initialize our map
+var map = L.map('map', {
+	center: [52.09, 5.11],
+	zoom: 15,
+	zoomControl: true
+}).setView([52.09, 5.11], 13);
+
+
+// //add openstreet map baselayer to the map
+var OpenStreetMap = L.tileLayer(
+	"http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+	{
+		attribution:
+			'&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+	}
+).addTo(map);
+
+var utrecht_boundary = L.geoJSON(null, {
+	style: {
+		color: '#000000',
+		weight: 2,
+		opacity: 0.5,
+		fillColor: '#e1c5e3',
+		fillOpacity: 0.4
+	}
+});
+
+// Load the Utrecht boundary from GeoJSON
+utrecht_boundary.addData(utrecht_geojson_projected);
+utrecht_boundary.addTo(map);
+// // empty geojson layer for the shortes path result
+var pathLayer = L.geoJSON(null);
+
+var startIcon = L.icon({
+    iconUrl: 'static/data/start_node.png',
+    // iconSize:     [38, 95], // size of the icon
+    // shadowSize:   [50, 64], // size of the shadow
+    iconAnchor:   [17, 17.5], // point of the icon which will correspond to marker's location
+    // shadowAnchor: [4, 62],  // the same for the shadow
+});
+// Make custom icons
+var endIcon = L.icon({
+    iconUrl: 'static/data/end_node.png',
+    // iconSize:     [38, 95], // size of the icon
+    // shadowSize:   [50, 64], // size of the shadow
+    iconAnchor:   [16,45], // point of the icon which will correspond to marker's location
+    // shadowAnchor: [4, 62],  // the same for the shadow
+});
+
+
+var sourceMarker = L.marker([52.089382, 5.1097798347], {
+	icon: startIcon,
+	draggable: true
+})
+	.on("dragend", function(e) {
+		selectedPoint = e.target.getLatLng();
+		getVertex(selectedPoint.lng, selectedPoint.lat, true);
+		map.removeLayer(pathLayer)
+	})
+	.addTo(map);
+
+
+// draggbale marker for destination point.Note the marker is initialized with an initial destination positon
+var targetMarker = L.marker([52.08896, 5.1674902], {
+	draggable: true,
+	icon: endIcon
+})
+	.on("dragend", function(e) {
+		selectedPoint = e.target.getLatLng();
+		getVertex(selectedPoint.lng, selectedPoint.lat, false);
+		map.removeLayer(pathLayer);
+	})
+	.addTo(map);
+
+// function to get nearest vertex to the passed point
+function getVertex(x, y, isSource) {
+
+	var url = `${geoserverUrl}/wfs?service=WFS&version=1.1.0&request=GetFeature&typeName=module6:nearest_vertex_utrecht_cloud&outputFormat=application/json&viewparams=x:${x};y:${y}`;	
+	console.warn(`Fetching nearest vertex for coordinates: (${x}, ${y})`);
+
+	$.ajax({
+		url: url,
+		success: function(data) {
+			var features = data.features;
+			if (!features.length) {
+				console.warn("No nearest vertex found");
+				return;
+			}
+
+			var id = features[0].properties.id;
+			console.log(`Nearest vertex ID: ${id}`);
+			if (isSource) {
+				source = id;
+				console.log("Source vertex ID:", source);
+			} else {
+				target = id;
+				console.log("Target vertex ID:", target);
+			}
+
+		}
+	});
+}
+
+// function to update the source and target nodes as returned from geoserver for later querying
+function loadVertex(response, isSource) {
+	var features = response.features;
+	map.removeLayer(pathLayer);
+	if (isSource) {
+		source = features[0].properties.id;
+	} else {
+		target = features[0].properties.id;
+	}
+}
+
+// function to get the shortest path from the give source and target nodes
+function getRoute() {
+	console.log(`Route requested: source=${source}, target=${target}`);
+
+	// Get the selectedPersona variable, depending on selected persona, then network call will be different
+	const url = getUrlForSelectedPersona(source, target);
+
+	console.log("URL:", url);
+
+	if (source !== null && target !== null) {
+		console.log("Went into the if statement");
+
+		$.getJSON(url, function(data) {
+			map.removeLayer(pathLayer);
+
+			// Apply styling to the route
+			pathLayer = L.geoJSON(data, {
+				style: function (feature) {
+					return {
+						color: '#d968c0',
+						weight: 6,
+						opacity: 0.9
+					};
+				}
+			});
+
+			map.addLayer(pathLayer);
+		});
+	} else {
+		console.warn("Source or target vertex is not set. Please set both before requesting a route.");
+		alert("Please select both source and target points on the map before requesting a route.");
+	}
+}
+
+document.addEventListener("DOMContentLoaded", function () {
+	document.getElementById("makeRouteButton").addEventListener("click", getRoute);
+});
+
+document.getElementById("regular").addEventListener("click", function () {
+	document.getElementById("explanation-text").style.display = "none";
+});
+
+const explanationText = document.getElementById("explanation-text");
+
+
+document.querySelectorAll('.persona-button').forEach(button => {
+	if (button.id !== "regular") {
+		button.addEventListener("click", function () {
+			explanationText.style.display = "block";
+		});
+	}
+});
+
+//var pt = proj4("EPSG:28992", "EPSG:4326", [133000, 455000]);
+//L.marker([pt[1], pt[0]]).addTo(map).bindPopup("Test point");
+
+// getVertex(sourceMarker.getLatLng());
+// getVertex(targetMarker.getLatLng());
+// getRoute();
+
+// Random marker for testing purposes
+// L.marker([50.5, 30.5]).addTo(map);
+

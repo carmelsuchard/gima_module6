@@ -172,3 +172,8 @@ cython_debug/
 
 # PyPI configuration file
 .pypirc
+data_prep/bag_data.py
+data_prep/data_layers/*
+
+data_prep/BAG/*
+data_prep/data_layers/*
