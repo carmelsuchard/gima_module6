@@ -1,5 +1,4 @@
-var geoserverUrl = "http://127.0.0.1:8080/geoserver/module6";
-
+var geoserverUrl = "http://4.211.183.66:8080/geoserver/Azure_db";
 // Default source and target vertex IDs
 var source = 100782;
 var target = 92512;
@@ -135,7 +134,6 @@ for (const id in sliders) {
 
 // Your function that uses the current slider values
 function yourFunctionUsingSliders() {
-  // Example: just console.log the current values
   console.log('Current slider values:', sliderValues);
 }
 
@@ -274,12 +272,9 @@ function getRoute() {
 
 	// Get the selectedPersona variable, depending on selected persona, then network call will be different
 	const url = getUrlForSelectedPersona(source, target);
-
 	console.log("URL:", url);
 
 	if (source !== null && target !== null) {
-		console.log("Went into the if statement");
-
 		$.getJSON(url, function(data) {
 			map.removeLayer(pathLayer);
 

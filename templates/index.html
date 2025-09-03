@@ -99,7 +99,6 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/proj4js/2.8.0/proj4.js"></script>
     <script src="https://unpkg.com/leaflet-ajax/dist/leaflet.ajax.min.js"></script>
     <script src="{{ url_for('static', filename='js/app.js') }}"></script>
-    <script src= "C:/Users/carme/OneDrive/Documents/Git_Repos/gima_module6/static/data/utrecht_geojson_projected.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/prefixfree/1.0.7/prefixfree.min.js"></script>
     <script>
     document.querySelectorAll('progress').forEach(progress => {
@@ -143,7 +142,8 @@
                 return null;
             }
 
-            const base = `http://127.0.0.1:8080/geoserver/module6/wfs?service=WFS&version=1.1.0&request=GetFeature`;
+            const base = `http://4.211.183.66:8080/geoserver/Azure_db/ows?service=WFS&version=1.1.0&request=GetFeature`;
+            
             const viewparams = `viewparams=source:${source};target:${target}`;
             let typeName = "";
 
@@ -169,7 +169,6 @@
             }
 
             const url = `${base}&typeName=${typeName}&outputFormat=application/json&${viewparams}`;
-            console.log("Generated URL:", url);
             return url;
         }
     </script>
